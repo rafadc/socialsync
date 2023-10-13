@@ -8,7 +8,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY . ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build bin/socialsync.go
 
@@ -21,7 +21,7 @@ FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /socialsync /socialsync
+COPY --from=build-stage /app/socialsync /socialsync
 
 EXPOSE 9000
 

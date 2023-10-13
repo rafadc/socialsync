@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build /socialsync
+RUN CGO_ENABLED=0 GOOS=linux go build bin/socialsync.go
 
 # Run the tests in the container
 FROM build-stage AS run-test-stage

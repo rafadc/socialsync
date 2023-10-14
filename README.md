@@ -42,3 +42,8 @@ docker run ghcr.io/rafadc/socialsync:0.1
 folder. It is useful for development.
 - `LOG_LEVEL` env variable to control log level.
 - `WAIT_BETWEEN_SYNC` env variable to control the time between syncs. Defaults to 30 minutes.
+
+
+## TODO
+
+Images are not supported. I just to a quick and dirty html to text conversion.

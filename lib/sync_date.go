@@ -7,17 +7,20 @@ import (
 )
 
 var baseFolder string
+var syncFileName string
 
 func init() {
 	baseFolder = os.Getenv("BASE_FOLDER")
 	if baseFolder == "" {
 		baseFolder = "/data"
 	}
+
+	syncFileName = baseFolder + "/last_sync.txt"
 }
 
 func LatestSyncDate() time.Time {
-	if _, err := os.Stat("sample.txt"); err == nil {
-		content, err := os.ReadFile(baseFolder + "/last_sync.txt")
+	if _, err := os.Stat(syncFileName); err == nil {
+		content, err := os.ReadFile(syncFileName)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -33,7 +36,7 @@ func LatestSyncDate() time.Time {
 }
 
 func UpdateSyncDate() {
-	f, err := os.Create(baseFolder + "/last_sync.txt")
+	f, err := os.Create(syncFileName)
 
 	if err != nil {
 		log.Fatal(err)
@@ -41,7 +44,7 @@ func UpdateSyncDate() {
 
 	defer f.Close()
 
-	val := time.Now().String()
+	val := time.Now().UTC().String()
 	data := []byte(val)
 
 	log.Debug("Writing new sync date: ", data)

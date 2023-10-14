@@ -32,5 +32,6 @@ func ParseFeed(rssFeed string) Feed {
 			Date:    *item.PublishedParsed,
 		}
 	})
+	convertedFeed = lo.Reverse(convertedFeed)
 	return Feed{Posts: convertedFeed}
 }

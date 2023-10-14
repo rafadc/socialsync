@@ -1,6 +1,6 @@
 # Socialsync
 
-A tiny Go program to synchronize your Mastodon feed with X. 
+A tiny Go program to synchronize your Mastodon feed with X. It will only go in the Mastodon->X direction.
 
 Mastodon offers a small RSS feed for every user's timeline so we can take advantage of that.
 
@@ -47,3 +47,11 @@ folder. It is useful for development.
 ## TODO
 
 Images are not supported. I just to a quick and dirty html to text conversion.
+
+## License
+
+MIT
+
+## Author
+
+Brought to you by [Rafadc](https://evilmeow.com/@rafadc)

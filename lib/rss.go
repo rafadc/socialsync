@@ -2,6 +2,7 @@ package socialsync
 
 import (
 	"github.com/charmbracelet/log"
+	"github.com/k3a/html2text"
 	"github.com/mmcdole/gofeed"
 	"github.com/samber/lo"
 	"time"
@@ -28,7 +29,7 @@ func ParseFeed(rssFeed string) Feed {
 
 	convertedFeed := lo.Map[*gofeed.Item, Post](feed.Items, func(item *gofeed.Item, index int) Post {
 		return Post{
-			Content: item.Description,
+			Content: html2text.HTML2Text(item.Description),
 			Date:    *item.PublishedParsed,
 		}
 	})

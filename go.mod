@@ -6,6 +6,7 @@ require (
 	github.com/charmbracelet/log v0.2.5
 	github.com/dghubble/oauth1 v0.7.2
 	github.com/g8rswimmer/go-twitter/v2 v2.1.5
+	github.com/k3a/html2text v1.2.1
 	github.com/mmcdole/gofeed v1.2.1
 	github.com/samber/lo v1.38.1
 )

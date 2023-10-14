@@ -1,33 +1,53 @@
 package socialsync
 
 import (
+	"context"
+	"fmt"
 	"github.com/charmbracelet/log"
-	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
+	"github.com/g8rswimmer/go-twitter/v2"
+	"net/http"
 	"os"
 )
 
+type authorize struct {
+	Token string
+}
+
+func (a authorize) Add(req *http.Request) {
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
+}
+
 func PostTweets(feed Feed, client *twitter.Client) {
 	for _, item := range feed.Posts {
-		tweet, _, err := client.Statuses.Update(string(item), nil)
-		if err != nil {
-			log.Errorf("Error: ", err)
+		if item.Date.Before(LatestSyncDate()) {
 			continue
 		}
+		req := twitter.CreateTweetRequest{
+			Text: item.Content,
+		}
 
-		log.Infof("Posted tweet %s \n", tweet.Text)
+		_, err := client.CreateTweet(context.Background(), req)
+		if err != nil {
+			log.Fatalf("create tweet error: %v", err)
+		}
+
+		log.Debugf("Posted tweet %s \n", item.Content)
 	}
 }
 
 func GetTwitterClient() *twitter.Client {
-	var twitterKey = os.Getenv("TWITTER_API_KEY")
-	var twitterSecret = os.Getenv("TWITTER_API_SECRET")
+	//var twitterKey = os.Getenv("TWITTER_API_KEY")
+	//var twitterSecret = os.Getenv("TWITTER_API_SECRET")
 
-	var twitterAccessToken = os.Getenv("TWITTER_ACCESS_TOKEN")
+	//var twitterAccessToken = os.Getenv("TWITTER_ACCESS_TOKEN")
 	var twitterAccessTokenSecret = os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
-	config := oauth1.NewConfig(twitterKey, twitterSecret)
-	token := oauth1.NewToken(twitterAccessToken, twitterAccessTokenSecret)
-	httpClient := config.Client(oauth1.NoContext, token)
+	client := &twitter.Client{
+		Authorizer: authorize{
+			Token: twitterAccessTokenSecret,
+		},
+		Client: http.DefaultClient,
+		Host:   "https://api.twitter.com",
+	}
 
-	return twitter.NewClient(httpClient)
+	return client
 }

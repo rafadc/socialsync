@@ -4,20 +4,23 @@ import (
 	"context"
 	"fmt"
 	"github.com/charmbracelet/log"
+	"github.com/dghubble/oauth1"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"net/http"
 	"os"
 )
 
-type authorize struct {
+type authorizer struct {
 	Token string
 }
 
-func (a authorize) Add(req *http.Request) {
+func (a authorizer) Add(req *http.Request) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
 }
 
-func PostTweets(feed Feed, client *twitter.Client) {
+func PostTweets(feed Feed) {
+	client := getTwitterClient()
+
 	for _, item := range feed.Posts {
 		if item.Date.Before(LatestSyncDate()) {
 			continue
@@ -35,18 +38,23 @@ func PostTweets(feed Feed, client *twitter.Client) {
 	}
 }
 
-func GetTwitterClient() *twitter.Client {
-	//var twitterKey = os.Getenv("TWITTER_API_KEY")
-	//var twitterSecret = os.Getenv("TWITTER_API_SECRET")
+func getTwitterClient() *twitter.Client {
+	var twitterKey = os.Getenv("TWITTER_API_KEY")
+	var twitterSecret = os.Getenv("TWITTER_API_SECRET")
 
-	//var twitterAccessToken = os.Getenv("TWITTER_ACCESS_TOKEN")
+	var twitterAccessToken = os.Getenv("TWITTER_ACCESS_TOKEN")
 	var twitterAccessTokenSecret = os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
+
+	config := oauth1.NewConfig(twitterKey, twitterSecret)
+	httpClient := config.Client(oauth1.NoContext, &oauth1.Token{
+		Token:       twitterAccessToken,
+		TokenSecret: twitterAccessTokenSecret,
+	})
+
 	client := &twitter.Client{
-		Authorizer: authorize{
-			Token: twitterAccessTokenSecret,
-		},
-		Client: http.DefaultClient,
-		Host:   "https://api.twitter.com",
+		Authorizer: &authorizer{},
+		Client:     httpClient,
+		Host:       "https://api.twitter.com",
 	}
 
 	return client

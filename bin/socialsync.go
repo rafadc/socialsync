@@ -30,14 +30,14 @@ func main() {
 	log.Info("Starting socialsync")
 
 	var rssFeed = os.Getenv("MASTODON_RSS_URL")
-	client := socialsync.GetTwitterClient()
 
 	for {
 		log.Info("Fetching feed")
 		feed := socialsync.ParseFeed(rssFeed)
-		socialsync.PostTweets(feed, client)
+		socialsync.PostTweets(feed)
 		socialsync.UpdateSyncDate()
 
+		log.Info("Waiting for next sync")
 		time.Sleep(waitBetweenSyncs())
 	}
 }
